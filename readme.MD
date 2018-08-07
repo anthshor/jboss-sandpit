@@ -30,6 +30,11 @@ vi /opt/jboss-eap-7.1/standalone/configuration/standalone.xml
             <inet-address value="${jboss.bind.address:192.168.33.31}"/>
         </interface>
     </interfaces>
+
+exit
+sudo su -
+service jboss-eap-rhel stop
+service jboss-eap-rhel start
 ```
 
 #### Test
@@ -43,7 +48,7 @@ To add a new user execute the add-user.sh script within the bin folder of your J
 
 ```
 sudo su - jboss-as
-export PATH=/bin/java/jdk1.8.0_181/bin:$PATH
+export PATH=/opt/jdk1.8.0_181/bin:$PATH
 
 [jboss-as@localhost ~]$ /opt/jboss-eap-7.1/bin/add-user.sh
 

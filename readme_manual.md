@@ -25,12 +25,16 @@ Install JDK 8  (As root?)  /usr/lib/jvm/default-java
 
 ```
 unzip p28279050_180181_Linux-x86-64.zip
-mkdir /bin/java
-tar zxvf /root/jdk-8u181-linux-x64.tar.gz -C /bin/java
-export PATH=/bin/java/jdk1.8.0_181/bin:$PATH
+cd /opt
+tar zxvf /root/jdk-8u181-linux-x64.tar.gz -C /opt
+export PATH=/opt/jdk1.8.0_181/bin:$PATH
 java -version
 
 ```
+
+
+
+
 
 # Install JBoss  
 
@@ -60,7 +64,7 @@ export EAP_HOME=/opt/jboss-eap-7.1
 vi $EAP_HOME/bin/init.d/jboss-eap.conf
 
     ## Location of JDK
-    JAVA_HOME="/bin/java/jdk1.8.0_181"
+    JAVA_HOME="/opt/jdk1.8.0_181"
 
     ## Location of JBoss EAP
     JBOSS_HOME="/opt/jboss-eap-7.1"
