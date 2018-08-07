@@ -1,91 +1,19 @@
-# Pre install JBoss EAP
+# Create JBoss EAP sandpit
 
 Download software to
 
 ```
 software\
+jboss-eap-7.1.0.zip
+p28279050_180181_Linux-x86-64.zip
 ```
-
-Create software owner
-```
-useradd jboss-as
-passwd jboss-as
-```
-
-Ensure unzip utility has been installed
-```
-yum install unzip
-```
-
-Ensure that a supported Java Development Kit (JDK) has been installed.
-
-Install JDK 8  (As root?)  /usr/lib/jvm/default-java
-
-```
-unzip p28279050_180181_Linux-x86-64.zip
-mkdir /bin/java
-tar zxvf /root/jdk-8u181-linux-x64.tar.gz -C /bin/java
-export PATH=/bin/java/jdk1.8.0_181/bin:$PATH
-java -version
-
-```
-
-# Install JBoss  
-
-(As root?)
-
-```
-cd /opt
-cp /vagrant/software/jboss-eap-7.1.0.zip .
-unzip jboss-eap-7.1.0.zip
-chown -R jboss-as:jboss-as jboss-eap-7.1/   <---?
-rm jboss-eap-7.1.0.zip
-```
-
-# Configure JBoss
-
-Configuring JBoss EAP as a Service in Red Hat Enterprise Linux
-
-As a minimum supply values for
-- JBOSS_HOME
-- JBOSS_USER
-
-
 
 
 ```
-export EAP_HOME=/opt/jboss-eap-7.1
-vi $EAP_HOME/bin/init.d/jboss-eap.conf
+vagrant up
+```
 
-    ## Location of JDK
-    JAVA_HOME="/bin/java/jdk1.8.0_181"
-
-    ## Location of JBoss EAP
-    JBOSS_HOME="/opt/jboss-eap-7.1"
-
-    ## The username who should own the process.
-    JBOSS_USER=jboss-as
-
-
-cp $EAP_HOME/bin/init.d/jboss-eap.conf /etc/default
-```
-Copy the startup script
-```
-cp $EAP_HOME/bin/init.d/jboss-eap-rhel.sh /etc/init.d
-chmod +x /etc/init.d/jboss-eap-rhel.sh
-```
-Add the new jboss_eap_rhel.sh to the list of automtically started services
-```
-chkconfig --add jboss-eap-rhel.sh
-```
-Start the service
-```
-service jboss-eap-rhel start
-```
-Make the service start automically on server startup
-```
-chkconfig jboss-eap-rhel.sh on
-```
+## Post steps not yet automated
 
 ### Modify standalone.xml 
 
@@ -104,7 +32,7 @@ vi /opt/jboss-eap-7.1/standalone/configuration/standalone.xml
     </interfaces>
 ```
 
-Test
+#### Test
 ```
 curl http://192.168.33.31:8080
 ```
@@ -114,6 +42,9 @@ curl http://192.168.33.31:8080
 To add a new user execute the add-user.sh script within the bin folder of your JBoss EAP 7 installation and enter the requested information.
 
 ```
+sudo su - jboss-as
+export PATH=/bin/java/jdk1.8.0_181/bin:$PATH
+
 [jboss-as@localhost ~]$ /opt/jboss-eap-7.1/bin/add-user.sh
 
 What type of user do you wish to add?
@@ -143,80 +74,4 @@ Is this new user going to be used for one AS process to connect to another AS pr
 e.g. for a slave host controller connecting to the master or for a Remoting connection for server to server EJB calls.
 yes/no? yes
 To represent the user add the following to the server-identities definition <secret value="YW50aG9ueQ==" />
-```
-
-# Check
-
-```
-ps -ef | grep java
-```
-
-
-# Troubleshooting
-
-## Issue 1
-```
-Redirecting to /bin/systemctl start jboss-eap-rhel.service
-
-Job for jboss-eap-rhel.service failed because a configured resource limit was exceeded. See "systemctl status jboss-eap-rhel.service" and "journalctl -xe" for details.
-```
-
-### Resolution
-Verify that the JBOSS_USER variable is set. It should be set in the jboss-as.conf file that you placed in /etc/jboss-as per the installation documentation. If it is not, then this error will appear when you try to start the service.
-
-
-## Issue 2
-```
-curl: (7) Failed connect to 192.168.33.31:8080; Connection refused
-```
-Connection refused
-
-### Reason
-By default (due to security reasons) JBoss AS binds only to localhost. If you want to access it via your hostname or IP, then you can edit the JBOSS_HOME/standalone/configuration/standalone.xml to change the "public" and "management" interfaces to point to the hostname of your system:
-
-```
-<interfaces>  
-  <interface name="management">  
-    <!-- bind to the hostname -->  
-     <inet-address value="your-hostname"/>  
-  </interface>  
-  <interface name="public">  
-    <!-- bind to the hostname -->  
-     <inet-address value="your-hostname"/>  
- </interface>  
-</interfaces> 
-```
-
-
-
-# Additional
-
-zip install above is not the preferred method to install JBoss. To install JBoss use the jar method, however this requires the GUI
-
-
-```
-java -jar jboss-eap-7.1.0-installer.jar
-```
-
-Automated JBoss install
-
-```
-java -jar jboss-eap-7.1.0-installer.jar auto.xml
-```
-
-Use the jar installer to generate the xml for the automated install
-Use a ```.variables``` file for passwords
-
-Or pass them as parameters
-```
-java -jar jboss-eap-7.1.0-installer.jar auto.xml -variables adminPassword=password#2,vault.keystorepwd=vaultkeystorepw,ssl.password=user12345
-```
-#### NOTE
-It is important that you do not have any spaces when specifying the -variables key/value pairs.
-
-
-# Console deployment
-```
-/run.sh -Djboss.as.deployment.ondemand=false
-http://localhost:8080/admin-console
 ```
