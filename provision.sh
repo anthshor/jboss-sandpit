@@ -7,7 +7,7 @@ DATE=`date +%Y-%m-%d:%H:%M:%S`
 # PreReqs
 
 useradd jboss-as
-echo jboss-as | passwd --stdin jboss
+echo jboss | passwd --stdin jboss-as
 
 yum -y install unzip
 
