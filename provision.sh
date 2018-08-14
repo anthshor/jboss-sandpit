@@ -2,7 +2,14 @@
 
 DATE=`date +%Y-%m-%d:%H:%M:%S`
 
-[ -f /proxy/proxy.env ] && source /proxy/proxy.env $1
+if [ -f /vagrant/proxy ]; then
+  proxy=`cat /vagrant/proxy`
+  echo "configuring proxy ${proxy}"
+  export http_proxy=${proxy}
+  export https_proxy=${proxy}
+  grep ^proxy /etc/yum.conf > /dev/null || echo "proxy=${proxy}">>/etc/yum.conf
+fi
+
 
 # PreReqs
 
