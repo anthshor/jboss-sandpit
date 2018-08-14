@@ -80,3 +80,10 @@ e.g. for a slave host controller connecting to the master or for a Remoting conn
 yes/no? yes
 To represent the user add the following to the server-identities definition <secret value="YW50aG9ueQ==" />
 ```
+
+
+## Notes
+
+Set memory arguements 
+- $JBOSS_HOME/bin/appclient.conf  ??
+

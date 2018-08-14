@@ -3,3 +3,4 @@ software/*.rpm
 software/*.zip
 software/*.jar
 deployments/*.war
+datacom*
